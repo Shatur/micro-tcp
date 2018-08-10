@@ -1,0 +1,5 @@
+# Directory settings for Plasma
+*.directory
+
+# Project settings
+*.user

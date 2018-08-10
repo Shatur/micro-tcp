@@ -15,4 +15,8 @@ set(HEADERS ${HEADERS}
 
 add_executable(${PROJECT_NAME} ${SOURCE} ${HEADERS})
 
-target_link_libraries(${PROJECT_NAME} stdc++fs)
+if (UNIX)
+    target_link_libraries(${PROJECT_NAME} stdc++fs)
+elseif (WIN32)
+    target_link_libraries(${PROJECT_NAME} wsock32)
+endif()

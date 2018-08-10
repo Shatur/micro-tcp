@@ -4,25 +4,50 @@
 #include <iostream>
 #include <cstring>
 #include <filesystem>
+
+#ifdef __linux__
 #include <unistd.h>
+#elif _WIN32
+#include <io.h>
+#endif
 
 Server::Server(unsigned short port)
 {
     server.sin_family = AF_INET; // IPv4
     server.sin_port = htons(port);
     server.sin_addr.s_addr = htonl(0); // localhost
+
+#ifdef _WIN32
+	WSADATA wsdata;
+	WSAStartup(0x0101, &wsdata);
+#endif
+}
+
+Server::~Server()
+{
+#ifdef _WIN32
+	WSACleanup();
+#endif
 }
 
 bool Server::bindPort()
 {
     listener = socket(AF_INET, SOCK_STREAM, 0);
     if (listener < 0) {
-        cout << "Error: " << strerror(errno) << endl;
+#ifdef __linux__
+		cout << "Error: " << strerror(errno) << endl;
+#elif _WIN32
+		cout << "Error: " << WSAGetLastError() << endl;
+#endif
         return false;
     }
 
     if (bind(listener, reinterpret_cast<struct sockaddr*>(&server), sizeof(server)) < 0) {
-        cout << "Error: " << strerror(errno) << endl;
+#ifdef __linux__
+		cout << "Error: " << strerror(errno) << endl;
+#elif _WIN32
+		cout << "Error: " << WSAGetLastError() << endl;
+#endif
         return false;
     }
 
@@ -36,7 +61,11 @@ void Server::receiveMessage()
     // Accept for connections
     socketDescriptor = accept(listener, nullptr, nullptr);
     if (socketDescriptor < 0) {
-        cout << "Error: " << strerror(errno) << endl;
+#ifdef __linux__
+		cout << "Error: " << strerror(errno) << endl;
+#elif _WIN32
+		cout << "Error: " << WSAGetLastError() << endl;
+#endif
         return;
     }
 
@@ -50,7 +79,11 @@ void Server::receiveMessage()
         message.append(partOfMessage);
     }
 
-    close(socketDescriptor);
+#ifdef __linux__
+	close(socketDescriptor);
+#elif _WIN32
+	closesocket(socketDescriptor);
+#endif
     cout << "Received message: " << message << endl;
 }
 
@@ -59,7 +92,11 @@ void Server::receiveFile()
     // Check "Downloads" directory
     if (!filesystem::exists("Downloads")) {
         if (!filesystem::create_directory("Downloads")) {
-            cout << "Error: " << strerror(errno) << endl;
+#ifdef __linux__
+			cout << "Error: " << strerror(errno) << endl;
+#elif _WIN32
+			cout << "Error: " << WSAGetLastError() << endl;
+#endif
             return;
         }
     }
@@ -68,7 +105,11 @@ void Server::receiveFile()
     listen(listener, 1);
     socketDescriptor = accept(listener, nullptr, nullptr);
     if (socketDescriptor < 0) {
-        cout << "Error: " << strerror(errno) << endl;
+#ifdef __linux__
+		cout << "Error: " << strerror(errno) << endl;
+#elif _WIN32
+		cout << "Error: " << WSAGetLastError() << endl;
+#endif
         return;
     }
 
@@ -79,7 +120,11 @@ void Server::receiveFile()
     // Open file for writing
     ofstream outfile("Downloads/" + string(fileName), ios::binary);
     if (!outfile.is_open()) {
-        cout << "Error: " << strerror(errno) << endl;
+#ifdef __linux__
+		cout << "Error: " << strerror(errno) << endl;
+#elif _WIN32
+		cout << "Error: " << WSAGetLastError() << endl;
+#endif
         return;
     }
 
