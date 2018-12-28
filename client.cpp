@@ -48,8 +48,10 @@ void Client::sendMessage(const string &message)
     if (connect(socketDescriptor, reinterpret_cast<struct sockaddr*>(&client), sizeof(client)) < 0) {
 #ifdef __linux__
 		cout << "Error: " << strerror(errno) << endl;
+        close(socketDescriptor);
 #elif _WIN32
 		cout << "Error: " << WSAGetLastError() << endl;
+        closesocket(socketDescriptor);
 #endif
         return;
     }
@@ -90,11 +92,14 @@ void Client::sendFile(const string &filePath)
 #endif
         return;
     }
+
     if (connect(socketDescriptor, reinterpret_cast<struct sockaddr*>(&client), sizeof(client)) < 0) {
 #ifdef __linux__
 		cout << "Error: " << strerror(errno) << endl;
+        close(socketDescriptor);
 #elif _WIN32
 		cout << "Error: " << WSAGetLastError() << endl;
+        closesocket(socketDescriptor);
 #endif
         return;
     }
@@ -130,5 +135,12 @@ void Client::sendFile(const string &filePath)
         cout << status << endl;
         part++;
     }
+
+#ifdef __linux__
+    close(socketDescriptor);
+#elif _WIN32
+    closesocket(socketDescriptor);
+#endif
+
     cout << "Sended " << totalBytes << " bytes" << endl;
 }

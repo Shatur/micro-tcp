@@ -122,8 +122,10 @@ void Server::receiveFile()
     if (!outfile.is_open()) {
 #ifdef __linux__
 		cout << "Error: " << strerror(errno) << endl;
+        close(socketDescriptor);
 #elif _WIN32
 		cout << "Error: " << WSAGetLastError() << endl;
+        closesocket(socketDescriptor);
 #endif
         return;
     }
@@ -147,5 +149,11 @@ void Server::receiveFile()
         send(socketDescriptor, "success", 8 * sizeof(char), 0);
         part++;
     }
+
+#ifdef __linux__
+    close(socketDescriptor);
+#elif _WIN32
+    closesocket(socketDescriptor);
+#endif
 }
 
