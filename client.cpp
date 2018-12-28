@@ -14,7 +14,7 @@
 #include <io.h>
 #endif
 
-Client::Client(const string address, unsigned short port)
+Client::Client(const string &address, unsigned short port)
 {
     client.sin_family = AF_INET; // IPv4
     client.sin_port = htons(port);
@@ -124,7 +124,7 @@ void Client::sendFile(const string &filePath)
         // Send part
         char buffer[64];
         fileStream.read(buffer, 64);
-        int readedBytes = fileStream.gcount();
+        long readedBytes = fileStream.gcount();
         totalBytes+= readedBytes;
         cout << "Sending bytes: " << readedBytes << ", Total: " << totalBytes << ", Part: "  << part << ", Status: ";
         send(socketDescriptor, buffer, static_cast<unsigned>(readedBytes), 0);

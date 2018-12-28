@@ -14,14 +14,14 @@ using namespace std;
 class Client
 {
 public:
-    Client(const string address = "127.0.0.1", unsigned short port = 6666);
+    Client(const string &address = "127.0.0.1", unsigned short port = 6666);
     ~Client();
     void sendMessage(const string &message);
     void sendFile(const string &fileName);
 
 private:
     struct sockaddr_in client;
-    int socketDescriptor;
+    int socketDescriptor = -1;
 };
 
 #endif // CLIENT_H

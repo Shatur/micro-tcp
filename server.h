@@ -15,7 +15,7 @@ using namespace std;
 class Server
 {
 public:
-    Server(unsigned short port = 6666);
+    explicit Server(unsigned short port = 6666);
 	~Server();
     bool bindPort();
     void receiveMessage();
@@ -24,8 +24,8 @@ public:
 private:
     struct sockaddr_in server;
     string message;
-    int listener;
-    int socketDescriptor;
+    int listener = -1;
+    int socketDescriptor = -1;
 };
 
 #endif // SERVER_H

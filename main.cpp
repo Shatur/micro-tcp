@@ -11,37 +11,38 @@ int main()
     string input;
     getline(cin, input);
 
+    // Server mode
     if (input == "s") {
         cout << "Enter port of the server (enter = \"6666\"): ";
         string port;
         getline(cin, port);
-        if (port == "")
+        if (port.empty())
             port = "6666";
 
-        Server server(static_cast<unsigned short>(stoul(port)));
+        Server server(static_cast<unsigned short>(stoi(port)));
         if (server.bindPort())
             server.receiveFile();
         return 0;
     }
 
-    if (input == "c" || input == "") {
+    if (input == "c" || input.empty()) {
         cout << "Enter IP address of the server (enter = \"127.0.0.1\"): ";
         string ip;
         getline(cin, ip);
-        if (ip == "")
+        if (ip.empty())
             ip = "127.0.0.1";
 
         cout << "Enter port of the server (enter = \"6666\"): ";
         string port;
         getline(cin, port);
-        if (port == "")
+        if (port.empty())
             port = "6666";
 
         cout << "Enter file path: ";
         string fileName;
         getline(cin, fileName);
 
-        Client client(ip, static_cast<unsigned short>(stoul(port)));
+        Client client(ip, static_cast<unsigned short>(stoi(port)));
         client.sendFile(fileName);
 
         return 0;
